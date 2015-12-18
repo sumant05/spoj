@@ -1,0 +1,78 @@
+// lca spoj  tc O(qlogn) 
+
+
+#include<bits/stdc++.h>
+using namespace std;
+int depth[1005]={0};
+int parent[1005][15];
+int LOGNMAX=11;
+
+int getparent(int u,int k)
+{
+    for(int i=0;i<LOGNMAX;++i)
+    {
+        if(k&1)
+            u=parent[u][i];
+        k>>=1;
+    }
+    return u;
+}
+
+int lca(int u,int v)
+{
+    if(depth[u]>depth[v]){
+        u=getparent(u,depth[u]-depth[v]);
+    }
+    else if(depth[u]<depth[v])
+        v=getparent(v,depth[v]-depth[u]);
+    if(u==v)
+        return u;
+
+    for(int i=LOGNMAX-1;i>=0;i--)
+    {
+        if(parent[u][i]!=parent[v][i]){
+            u=parent[u][i];
+            v=parent[v][i];
+        }
+    }
+    return parent[u][0];
+}
+
+int main()
+{
+    int t,n,q,m,x,y;
+    ios_base::sync_with_stdio(0);
+    cin>>t;
+    for(int j=1;j<=t;j++)
+    {
+        cin>>n;
+        memset(parent,-1,sizeof parent);
+        memset(depth,0,sizeof depth);
+
+        for(int i=1;i<=n;i++)
+        {
+            cin>>m;
+            while(m--)
+            {
+                cin>>x;
+                parent[x][0]=i;
+                depth[x]=depth[i]+1;
+            }
+        }
+        for (int i = 1; i < LOGNMAX; ++i) {
+            for (int j = 1; j <= n; ++j) {
+                if (parent[j][i-1] != -1) {
+                parent[j][i] = parent[parent[j][i-1]][i-1];
+                }
+            }
+        }
+        cin>>q;
+        cout<<"Case "<<j<<":"<<endl;
+        while(q--)
+        {
+            cin>>x>>y;
+            cout<<lca(x,y)<<endl;
+        }
+    }
+    return 0;
+}
